@@ -114,6 +114,10 @@ run_apt install -y nginx ca-certificates certbot python3-certbot-nginx
 
 readonly SITE_FILE="/etc/nginx/sites-available/${SITE_NAME}"
 readonly SITE_LINK="/etc/nginx/sites-enabled/${SITE_NAME}"
+readonly DENY_SITE_NAME="new-api-deny-direct-access"
+readonly DENY_SITE_FILE="/etc/nginx/sites-available/${DENY_SITE_NAME}"
+readonly DENY_SITE_LINK="/etc/nginx/sites-enabled/${DENY_SITE_NAME}"
+readonly IP_SITE_LINK="/etc/nginx/sites-enabled/new-api-ip-https"
 
 backup_if_present "$SITE_FILE"
 cat >"$SITE_FILE" <<EOF
@@ -140,7 +144,28 @@ server {
 }
 EOF
 
+backup_if_present "$DENY_SITE_FILE"
+cat >"$DENY_SITE_FILE" <<'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+
+    return 444;
+}
+
+server {
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    server_name _;
+
+    ssl_reject_handshake on;
+}
+EOF
+
+rm -f "$IP_SITE_LINK" /etc/nginx/sites-enabled/default
 ln -sfn "$SITE_FILE" "$SITE_LINK"
+ln -sfn "$DENY_SITE_FILE" "$DENY_SITE_LINK"
 
 nginx -t
 systemctl enable nginx
@@ -183,4 +208,5 @@ printf 'URL: https://%s\n' "$DOMAIN"
 printf 'Upstream: http://127.0.0.1:%s\n' "$PORT"
 printf 'Certificate: /etc/letsencrypt/live/%s/fullchain.pem\n' "$DOMAIN"
 printf '\nSet the Cloudflare SSL/TLS encryption mode to Full (strict).\n'
+printf 'Direct HTTP and HTTPS access by public IP is disabled.\n'
 printf 'Also ensure TCP ports 80 and 443 are open in the cloud security group.\n'
