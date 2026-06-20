@@ -78,7 +78,7 @@ function EmptyAboutState() {
           <p>
             {t('New API project repository:')}{' '}
             <a
-              href='https://github.com/QuantumNous/new-api'
+              href='https://github.com/aeolialiu2051/new-api'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:underline'
