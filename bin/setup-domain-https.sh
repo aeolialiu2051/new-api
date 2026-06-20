@@ -3,26 +3,21 @@
 set -Eeuo pipefail
 
 readonly SCRIPT_NAME="$(basename "$0")"
-readonly SITE_NAME="new-api-ip-https"
+readonly SITE_NAME="new-api-domain-https"
 readonly PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-PUBLIC_IP="${1:-${PUBLIC_IP:-}}"
 ENV_FILE="${ENV_FILE:-${PROJECT_ROOT}/.env}"
-CERT_DAYS="${CERT_DAYS:-365}"
 APT_LOCK_WAIT_SECONDS="${APT_LOCK_WAIT_SECONDS:-600}"
 
 usage() {
   cat <<EOF
-Usage: sudo ./${SCRIPT_NAME} [public-ipv4]
+Usage: sudo ./${SCRIPT_NAME}
 
 Example:
   sudo ./${SCRIPT_NAME}
-  sudo ./${SCRIPT_NAME} 203.0.113.10
 
 Environment variables:
-  PUBLIC_IP       Public IPv4 address (alternative to the first argument)
-  ENV_FILE        Environment file containing PORT (default: <project-root>/.env)
-  CERT_DAYS       Certificate validity in days (default: 365)
+  ENV_FILE        Environment file containing DOMAIN and PORT (default: <project-root>/.env)
   APT_LOCK_WAIT_SECONDS  Maximum apt lock wait (default: 600)
 EOF
 }
@@ -32,15 +27,11 @@ die() {
   exit 1
 }
 
-is_ipv4() {
-  local ip="$1" octet
-  local -a octets
+is_domain() {
+  local domain="$1"
 
-  [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || return 1
-  IFS='.' read -r -a octets <<<"$ip"
-  for octet in "${octets[@]}"; do
-    ((10#$octet <= 255)) || return 1
-  done
+  [[ ${#domain} -le 253 ]] || return 1
+  [[ "$domain" =~ ^([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}$ ]]
 }
 
 read_dotenv_value() {
@@ -58,21 +49,6 @@ read_dotenv_value() {
     value="${value:1:${#value}-2}"
   fi
   printf '%s' "$value"
-}
-
-is_private_or_reserved_ipv4() {
-  local ip="$1"
-
-  [[ "$ip" =~ ^10\. ]] ||
-    [[ "$ip" =~ ^127\. ]] ||
-    [[ "$ip" =~ ^169\.254\. ]] ||
-    [[ "$ip" =~ ^192\.168\. ]] ||
-    [[ "$ip" =~ ^172\.(1[6-9]|2[0-9]|3[01])\. ]] ||
-    [[ "$ip" =~ ^0\. ]] ||
-    [[ "$ip" =~ ^22[4-9]\. ]] ||
-    [[ "$ip" =~ ^23[0-9]\. ]] ||
-    [[ "$ip" =~ ^24[0-9]\. ]] ||
-    [[ "$ip" =~ ^25[0-5]\. ]]
 }
 
 backup_if_present() {
@@ -118,30 +94,13 @@ run_apt() {
   done
 }
 
-detect_public_ipv4() {
-  local endpoint candidate
-  local -a endpoints=(
-    "https://api.ipify.org"
-    "https://checkip.amazonaws.com"
-    "https://ifconfig.me/ip"
-  )
-
-  for endpoint in "${endpoints[@]}"; do
-    candidate="$(curl --proto '=https' --tlsv1.2 -fsS --max-time 8 "$endpoint" 2>/dev/null | tr -d '[:space:]' || true)"
-    if is_ipv4 "$candidate" && ! is_private_or_reserved_ipv4 "$candidate"; then
-      printf '%s' "$candidate"
-      return 0
-    fi
-  done
-
-  return 1
-}
-
 [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]] && { usage; exit 0; }
 [[ $EUID -eq 0 ]] || die "run this script with sudo"
-[[ "$CERT_DAYS" =~ ^[0-9]+$ ]] && ((CERT_DAYS >= 1)) || die "CERT_DAYS must be a positive integer"
 [[ "$APT_LOCK_WAIT_SECONDS" =~ ^[0-9]+$ ]] && ((APT_LOCK_WAIT_SECONDS >= 1)) || die "APT_LOCK_WAIT_SECONDS must be a positive integer"
 [[ -f "$ENV_FILE" ]] || die "environment file not found: $ENV_FILE"
+DOMAIN="$(read_dotenv_value DOMAIN "$ENV_FILE")"
+[[ -n "$DOMAIN" ]] || die "DOMAIN is missing or empty in $ENV_FILE"
+is_domain "$DOMAIN" || die "invalid DOMAIN in $ENV_FILE: $DOMAIN"
 PORT="$(read_dotenv_value PORT "$ENV_FILE")"
 [[ -n "$PORT" ]] || die "PORT is missing or empty in $ENV_FILE"
 [[ "$PORT" =~ ^[0-9]+$ ]] || die "PORT in $ENV_FILE must be a number"
@@ -151,67 +110,17 @@ command -v apt-get >/dev/null 2>&1 || die "this script only supports Ubuntu/Debi
 
 export DEBIAN_FRONTEND=noninteractive
 run_apt update
-run_apt install -y nginx openssl ca-certificates curl
+run_apt install -y nginx ca-certificates certbot python3-certbot-nginx
 
-if [[ -z "$PUBLIC_IP" ]]; then
-  printf 'Detecting public IPv4 address...\n'
-  PUBLIC_IP="$(detect_public_ipv4)" || die "could not detect a public IPv4 address; pass it as the first argument"
-  printf 'Detected public IPv4 address: %s\n' "$PUBLIC_IP"
-fi
-
-is_ipv4 "$PUBLIC_IP" || die "invalid IPv4 address: $PUBLIC_IP"
-is_private_or_reserved_ipv4 "$PUBLIC_IP" && die "$PUBLIC_IP is not a public IPv4 address"
-
-readonly CERT_DIR="/etc/nginx/ssl/${SITE_NAME}"
-readonly CERT_FILE="${CERT_DIR}/server.crt"
-readonly KEY_FILE="${CERT_DIR}/server.key"
 readonly SITE_FILE="/etc/nginx/sites-available/${SITE_NAME}"
 readonly SITE_LINK="/etc/nginx/sites-enabled/${SITE_NAME}"
-
-install -d -m 0755 "$CERT_DIR"
-
-certificate_matches_ip=false
-if [[ -s "$CERT_FILE" ]] && openssl x509 -in "$CERT_FILE" -noout -checkend 86400 >/dev/null 2>&1; then
-  if openssl x509 -in "$CERT_FILE" -noout -ext subjectAltName 2>/dev/null | grep -Fq "IP Address:${PUBLIC_IP}"; then
-    certificate_matches_ip=true
-  fi
-fi
-
-if [[ "$certificate_matches_ip" != true ]]; then
-  backup_if_present "$CERT_FILE"
-  backup_if_present "$KEY_FILE"
-  openssl req -x509 -nodes -newkey rsa:2048 -sha256 \
-    -keyout "$KEY_FILE" \
-    -out "$CERT_FILE" \
-    -days "$CERT_DAYS" \
-    -subj "/CN=${PUBLIC_IP}" \
-    -addext "subjectAltName=IP:${PUBLIC_IP}" \
-    -addext "keyUsage=critical,digitalSignature,keyEncipherment" \
-    -addext "extendedKeyUsage=serverAuth"
-  chmod 0600 "$KEY_FILE"
-  chmod 0644 "$CERT_FILE"
-fi
 
 backup_if_present "$SITE_FILE"
 cat >"$SITE_FILE" <<EOF
 server {
     listen 80;
     listen [::]:80;
-    server_name ${PUBLIC_IP};
-
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name ${PUBLIC_IP};
-
-    ssl_certificate ${CERT_FILE};
-    ssl_certificate_key ${KEY_FILE};
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_session_cache shared:SSL:10m;
-    ssl_session_timeout 1d;
+    server_name ${DOMAIN};
 
     client_max_body_size 100m;
 
@@ -221,7 +130,7 @@ server {
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_buffering off;
@@ -264,9 +173,14 @@ elif command -v iptables >/dev/null 2>&1; then
   fi
 fi
 
+certbot --nginx --non-interactive --agree-tos --register-unsafely-without-email \
+  --redirect --domain "$DOMAIN"
+nginx -t
+systemctl reload nginx
+
 printf '\nHTTPS deployment completed.\n'
-printf 'URL: https://%s\n' "$PUBLIC_IP"
+printf 'URL: https://%s\n' "$DOMAIN"
 printf 'Upstream: http://127.0.0.1:%s\n' "$PORT"
-printf 'Certificate: %s\n' "$CERT_FILE"
-printf '\nThis is a self-signed certificate. Browsers and API clients will warn until the certificate is trusted manually.\n'
+printf 'Certificate: /etc/letsencrypt/live/%s/fullchain.pem\n' "$DOMAIN"
+printf '\nSet the Cloudflare SSL/TLS encryption mode to Full (strict).\n'
 printf 'Also ensure TCP ports 80 and 443 are open in the cloud security group.\n'
