@@ -57,17 +57,35 @@ function EmptyAboutState() {
         </div>
         <div className='space-y-4 text-sm'>
           <p>
-            {t('New API Project Repository:')}{' '}
+            WarpGate API:{' '}
             <a
-              href='https://github.com/QuantumNous/new-api'
+              href='https://github.com/aeolialiu2051/new-api'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:underline'
             >
-              {t('https://github.com/QuantumNous/new-api')}
+              https://github.com/aeolialiu2051/new-api
             </a>
           </p>
           <p className='text-muted-foreground'>
+            <a
+              href='https://github.com/aeolialiu2051/new-api'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:underline'
+            >
+              WarpGate API
+            </a>{' '}
+            © {currentYear}{' '}
+            <a
+              href='https://github.com/aeolialiu2051'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:underline'
+            >
+              AeoliaLiu
+            </a>{' '}
+            {t('| Based on')}{' '}
             <a
               href='https://github.com/QuantumNous/new-api'
               target='_blank'

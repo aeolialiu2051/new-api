@@ -21,8 +21,16 @@ For commercial licensing, please contact support@quantumnous.com
  */
 
 // System Configuration Defaults
-export const DEFAULT_SYSTEM_NAME = 'New API'
+export const DEFAULT_SYSTEM_NAME = 'WarpGate API'
 export const DEFAULT_LOGO = '/logo.png'
+
+export function getDisplaySystemName(systemName?: string) {
+  const normalizedName = systemName?.trim()
+  if (!normalizedName || /^(New API|NewAPI)$/i.test(normalizedName)) {
+    return DEFAULT_SYSTEM_NAME
+  }
+  return normalizedName
+}
 
 // LocalStorage Keys
 export const STORAGE_KEYS = {
