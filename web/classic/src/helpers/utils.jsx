@@ -48,8 +48,10 @@ export function isRoot() {
 
 export function getSystemName() {
   let system_name = localStorage.getItem('system_name');
-  if (!system_name) return 'New API';
-  return system_name;
+  if (!system_name || /^(New API|NewAPI)$/i.test(system_name.trim())) {
+    return 'WarpGate API';
+  }
+  return system_name.trim();
 }
 
 export function getLogo() {
