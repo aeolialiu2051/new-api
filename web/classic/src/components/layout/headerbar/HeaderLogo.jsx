@@ -62,15 +62,6 @@ const HeaderLogo = ({
               {systemName}
             </Typography.Title>
           </SkeletonWrapper>
-          {!isLoading && (
-            <Tag
-              className='whitespace-nowrap'
-              size='small'
-              shape='circle'
-            >
-              NewAPI
-            </Tag>
-          )}
           {(isSelfUseMode || isDemoSiteMode) && !isLoading && (
             <Tag
               color={isSelfUseMode ? 'purple' : 'blue'}
