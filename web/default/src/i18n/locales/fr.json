@@ -251,6 +251,7 @@
     "aggregates 50+ AI providers behind one unified API. Manage access, track costs, and scale effortlessly.": "agrège plus de 50 fournisseurs IA derrière une API unifiée. Gérez l'accès, suivez les coûts et évoluez sans effort.",
     "Aggregation bucket": "Fenêtre d’agrégation",
     "AGPL v3.0 License": "Licence AGPL v3.0",
+    "and must be used in compliance with the": "et doit être utilisé dans le respect de la",
     "AI Application Infrastructure Foundation": "Socle d'infrastructure pour applications d'IA",
     "AI model testing environment": "Environnement de test de modèle IA",
     "AI models": "Modèles d'IA",
@@ -4811,6 +4812,10 @@
     "Zero retention": "Aucune rétention",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
+    "MIT License": "Licence MIT",
+    "New API project repository:": "Dépôt du projet New API :",
+    "This project is licensed under the": "Ce projet est distribué sous la",
+    "WarpGate API project repository:": "Dépôt du projet WarpGate API :",
     "Zoom": "Zoom"
   }
 }

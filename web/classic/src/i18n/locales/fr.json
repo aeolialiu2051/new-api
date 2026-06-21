@@ -196,6 +196,7 @@
     "MjProxy 任务记录": "Tâches MjProxy",
     "MIT许可证": "Licence MIT",
     "New API项目仓库地址：": "Adresse du référentiel du projet New API : ",
+    "WarpGate API项目仓库地址：": "Adresse du référentiel du projet WarpGate API : ",
     "NewAPI 默认不会将入口请求的 User-Agent 透传到上游渠道；该条件仅用于识别访问本站点的客户端。": "NewAPI ne transmet pas le User-Agent de la requête entrante aux canaux en amont par défaut ; cette condition sert uniquement à identifier les clients accédant à ce site.",
     "OAuth Client ID": "OAuth Client ID",
     "OAuth Client Secret": "OAuth Client Secret",

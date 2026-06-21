@@ -57,7 +57,7 @@ function EmptyAboutState() {
         </div>
         <div className='space-y-4 text-sm'>
           <p>
-            WarpGate API:{' '}
+            {t('WarpGate API project repository:')}{' '}
             <a
               href='https://github.com/aeolialiu2051/new-api'
               target='_blank'
@@ -65,6 +65,17 @@ function EmptyAboutState() {
               className='text-primary hover:underline'
             >
               https://github.com/aeolialiu2051/new-api
+            </a>
+          </p>
+          <p>
+            {t('New API project repository:')}{' '}
+            <a
+              href='https://github.com/QuantumNous/new-api'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:underline'
+            >
+              https://github.com/QuantumNous/new-api
             </a>
           </p>
           <p className='text-muted-foreground'>
@@ -105,12 +116,12 @@ function EmptyAboutState() {
             </a>{' '}
             {t('| Based on')}{' '}
             <a
-              href='https://github.com/songquanpeng/one-api'
+              href='https://github.com/songquanpeng/one-api/releases/tag/v0.5.4'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:underline'
             >
-              {t('One API')}
+              One API v0.5.4
             </a>{' '}
             © 2023{' '}
             <a
@@ -123,9 +134,18 @@ function EmptyAboutState() {
             </a>
           </p>
           <p className='text-muted-foreground'>
-            {t('This project must be used in compliance with the')}{' '}
+            {t('This project is licensed under the')}{' '}
             <a
-              href='https://github.com/QuantumNous/new-api/blob/main/LICENSE'
+              href='https://github.com/songquanpeng/one-api/blob/v0.5.4/LICENSE'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:underline'
+            >
+              {t('MIT License')}
+            </a>{' '}
+            {t('and must be used in compliance with the')}{' '}
+            <a
+              href='https://www.gnu.org/licenses/agpl-3.0.html'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:underline'

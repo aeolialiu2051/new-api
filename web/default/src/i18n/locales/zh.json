@@ -251,6 +251,7 @@
     "aggregates 50+ AI providers behind one unified API. Manage access, track costs, and scale effortlessly.": "聚合 50+ AI 提供商于统一 API 之后。轻松管理访问、追踪成本、弹性扩展。",
     "Aggregation bucket": "聚合时间桶",
     "AGPL v3.0 License": "AGPL v3.0 协议",
+    "and must be used in compliance with the": "授权，需在遵守",
     "AI Application Infrastructure Foundation": "人工智能应用基座",
     "AI model testing environment": "AI模型测试环境",
     "AI models": "AI 模型",
@@ -4811,6 +4812,10 @@
     "Zero retention": "零数据保留",
     "Zhipu": "智谱",
     "Zhipu V4": "智谱 V4",
+    "MIT License": "MIT 许可证",
+    "New API project repository:": "New API 项目仓库地址：",
+    "This project is licensed under the": "本项目根据",
+    "WarpGate API project repository:": "WarpGate API 项目仓库地址：",
     "Zoom": "缩放"
   }
 }

@@ -251,6 +251,7 @@
     "aggregates 50+ AI providers behind one unified API. Manage access, track costs, and scale effortlessly.": "tổng hợp hơn 50 nhà cung cấp AI sau một API thống nhất. Quản lý truy cập, theo dõi chi phí và mở rộng dễ dàng.",
     "Aggregation bucket": "Khoảng tổng hợp",
     "AGPL v3.0 License": "Giấy phép AGPL v3.0",
+    "and must be used in compliance with the": "và phải được sử dụng tuân theo",
     "AI Application Infrastructure Foundation": "Nền tảng hạ tầng ứng dụng AI",
     "AI model testing environment": "Môi trường thử nghiệm mô hình AI",
     "AI models": "mô hình AI",
@@ -4811,6 +4812,10 @@
     "Zero retention": "Không lưu dữ liệu",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
+    "MIT License": "Giấy phép MIT",
+    "New API project repository:": "Kho mã nguồn dự án New API:",
+    "This project is licensed under the": "Dự án này được cấp phép theo",
+    "WarpGate API project repository:": "Kho mã nguồn dự án WarpGate API:",
     "Zoom": "Zoom"
   }
 }
