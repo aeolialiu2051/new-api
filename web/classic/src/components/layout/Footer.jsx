@@ -23,45 +23,19 @@ import { Typography } from '@douyinfe/semi-ui';
 import { getFooterHTML, getLogo, getSystemName } from '../../helpers';
 import { StatusContext } from '../../context/Status';
 
-const ProjectAttribution = ({ currentYear }) => {
+const ProjectAttribution = () => {
   const { t } = useTranslation();
 
   return (
     <div className='text-sm !text-semi-color-text-1'>
-      <a
-        href='https://github.com/aeolialiu2051/new-api'
-        target='_blank'
-        rel='noopener noreferrer'
-        className='!text-semi-color-primary font-medium'
-      >
-        WarpGate API
-      </a>{' '}
-      © {currentYear}{' '}
-      <a
-        href='https://github.com/aeolialiu2051'
-        target='_blank'
-        rel='noopener noreferrer'
-        className='!text-semi-color-primary font-medium'
-      >
-        AeoliaLiu
-      </a>{' '}
-      {t('| 基于')}{' '}
+      {t('设计与开发由')}{' '}
       <a
         href='https://github.com/QuantumNous/new-api'
         target='_blank'
         rel='noopener noreferrer'
         className='!text-semi-color-primary font-medium'
       >
-        NewAPI
-      </a>{' '}
-      © {currentYear}{' '}
-      <a
-        href='https://github.com/QuantumNous'
-        target='_blank'
-        rel='noopener noreferrer'
-        className='!text-semi-color-primary font-medium'
-      >
-        QuantumNous
+        New API
       </a>
     </div>
   );
@@ -239,7 +213,7 @@ const FooterBar = () => {
             </Typography.Text>
           </div>
 
-          <ProjectAttribution currentYear={currentYear} />
+          <ProjectAttribution />
         </div>
       </footer>
     ),
@@ -260,7 +234,7 @@ const FooterBar = () => {
               dangerouslySetInnerHTML={{ __html: footer }}
             ></div>
             <div className='flex-shrink-0'>
-              <ProjectAttribution currentYear={currentYear} />
+              <ProjectAttribution />
             </div>
           </div>
         </footer>
