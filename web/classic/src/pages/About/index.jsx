@@ -158,17 +158,6 @@ const About = () => {
         </a>
       </p>
       <p>
-        {t('New API项目仓库地址：')}
-        <a
-          href='https://github.com/QuantumNous/new-api'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='!text-semi-color-primary'
-        >
-          https://github.com/QuantumNous/new-api
-        </a>
-      </p>
-      <p>
         {t('本项目根据')}
         <a
           href='https://github.com/songquanpeng/one-api/blob/v0.5.4/LICENSE'
