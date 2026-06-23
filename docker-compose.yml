@@ -101,7 +101,7 @@ services:
 #    environment:
 #      CLICKHOUSE_DB: new_api_logs
 #      CLICKHOUSE_USER: default
-#      CLICKHOUSE_PASSWORD: 123456  # ⚠️ IMPORTANT: Change this password in production!
+#      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}  # ⚠️ IMPORTANT: Change this password in production!
 #      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
 #    volumes:
 #      - clickhouse_data:/var/lib/clickhouse
