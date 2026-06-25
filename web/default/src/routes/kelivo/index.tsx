@@ -18,11 +18,13 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Copy, Loader2, Share2 } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/auth-store'
+import { getSelf } from '@/lib/api'
 import { getLobeIcon } from '@/lib/lobe-icon'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { CHANNEL_TYPE_OPTIONS } from '@/features/channels/constants'
@@ -39,7 +41,6 @@ import {
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
-import { Main } from '@/components/layout'
 
 type ProviderType = 'openai'
 
@@ -53,6 +54,34 @@ const KELIVO_PROVIDER_OPTIONS: {
 }[] = [
   { channelType: 1, providerType: 'openai' },
 ]
+
+let sessionVerified = false
+
+async function requireKelivoAuth(locationHref: string) {
+  const { auth } = useAuthStore.getState()
+
+  if (!auth.user) {
+    throw redirect({
+      to: '/sign-in',
+      search: { redirect: locationHref },
+    })
+  }
+
+  if (sessionVerified) return
+
+  const res = await getSelf().catch(() => null)
+  if (res?.success && res.data) {
+    auth.setUser(res.data)
+    sessionVerified = true
+    return
+  }
+
+  auth.reset()
+  throw redirect({
+    to: '/sign-in',
+    search: { redirect: locationHref },
+  })
+}
 
 function encodeUtf8Base64(value: string): string {
   const bytes = new TextEncoder().encode(value)
@@ -91,7 +120,8 @@ function encodeProviderConfig({
   return `ai-provider:v1:${encodeUtf8Base64(json)}`
 }
 
-export const Route = createFileRoute('/_authenticated/kelivo/')({
+export const Route = createFileRoute('/kelivo/')({
+  beforeLoad: ({ location }) => requireKelivoAuth(location.href),
   component: KelivoPage,
 })
 
@@ -197,7 +227,7 @@ function KelivoPage() {
   }
 
   return (
-    <Main className='bg-background px-4 py-6 sm:px-6 lg:py-8'>
+    <main className='bg-background px-4 py-6 sm:px-6 lg:py-8'>
       <div className='mx-auto flex min-h-full w-full max-w-6xl flex-col'>
         <div className='flex flex-1 flex-col gap-7'>
           <header className='flex flex-col gap-4'>
@@ -341,6 +371,6 @@ function KelivoPage() {
           </Button>
         </div>
       </div>
-    </Main>
+    </main>
   )
 }
