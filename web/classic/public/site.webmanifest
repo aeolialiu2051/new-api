@@ -1,0 +1,15 @@
+{
+  "name": "WarpGate API",
+  "short_name": "WarpGate API",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
