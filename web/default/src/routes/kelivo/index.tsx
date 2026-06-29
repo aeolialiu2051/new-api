@@ -19,7 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { Copy, Loader2, Share2 } from 'lucide-react'
+import { Copy, Download, Loader2, Share2 } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -45,6 +45,7 @@ import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 type ProviderType = 'openai'
 
 const DEFAULT_PROVIDER_NAME = 'WarpGateAPI'
+const KELIVO_APP_STORE_URL = 'https://apps.apple.com/app/id6752122930'
 const DEFAULT_BASE_URL_BY_PROVIDER: Record<ProviderType, string> = {
   openai: 'https://warpgateapi.com/v1',
 }
@@ -348,7 +349,7 @@ function KelivoPage() {
           </div>
         </div>
 
-        <div className='mt-6 grid gap-3 border-t pt-5 sm:grid-cols-2 sm:gap-4'>
+        <div className='mt-6 grid gap-3 border-t pt-5 sm:grid-cols-3 sm:gap-4'>
           <Button
             variant='outline'
             size='lg'
@@ -368,6 +369,20 @@ function KelivoPage() {
           >
             <Share2 data-icon='inline-start' />
             {t('Share configuration')}
+          </Button>
+          <Button
+            size='lg'
+            className='h-12 text-base'
+            render={
+              <a
+                href={KELIVO_APP_STORE_URL}
+                target='_blank'
+                rel='noreferrer'
+              />
+            }
+          >
+            <Download data-icon='inline-start' />
+            {t('Download Kelivo App')}
           </Button>
         </div>
       </div>
