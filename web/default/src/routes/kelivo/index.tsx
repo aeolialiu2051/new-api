@@ -45,7 +45,9 @@ import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 type ProviderType = 'openai'
 
 const DEFAULT_PROVIDER_NAME = 'WarpGateAPI'
-const KELIVO_APP_STORE_URL = 'https://apps.apple.com/app/id6752122930'
+const KELIVO_APP_STORE_URL = 'https://apps.apple.com/us/app/kelivo/id6752122930'
+const KELIVO_ANDROID_RELEASES_URL =
+  'https://github.com/Chevey339/kelivo/releases'
 const DEFAULT_BASE_URL_BY_PROVIDER: Record<ProviderType, string> = {
   openai: 'https://warpgateapi.com/v1',
 }
@@ -57,6 +59,12 @@ const KELIVO_PROVIDER_OPTIONS: {
 ]
 
 let sessionVerified = false
+
+function getKelivoDownloadUrl(): string {
+  if (typeof navigator === 'undefined') return KELIVO_APP_STORE_URL
+  if (/android/i.test(navigator.userAgent)) return KELIVO_ANDROID_RELEASES_URL
+  return KELIVO_APP_STORE_URL
+}
 
 async function requireKelivoAuth(locationHref: string) {
   const { auth } = useAuthStore.getState()
@@ -129,6 +137,7 @@ export const Route = createFileRoute('/kelivo/')({
 function KelivoPage() {
   const { t } = useTranslation()
   const { copyToClipboard } = useCopyToClipboard()
+  const kelivoDownloadUrl = useMemo(() => getKelivoDownloadUrl(), [])
   const [providerType, setProviderType] = useState<ProviderType>('openai')
   const [name, setName] = useState(DEFAULT_PROVIDER_NAME)
   const [baseUrl, setBaseUrl] = useState(DEFAULT_BASE_URL_BY_PROVIDER.openai)
@@ -374,7 +383,7 @@ function KelivoPage() {
             className='h-12 text-base'
             render={
               <a
-                href={KELIVO_APP_STORE_URL}
+                href={kelivoDownloadUrl}
                 target='_blank'
                 rel='noreferrer'
               />
