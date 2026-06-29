@@ -84,6 +84,16 @@ async function requireKelivoAuth(locationHref: string) {
   })
 }
 
+async function getWarpgateShareIconFile(): Promise<File | null> {
+  const response = await fetch('/logo.png').catch(() => null)
+  if (!response?.ok) return null
+
+  const blob = await response.blob()
+  if (blob.type !== 'image/png') return null
+
+  return new File([blob], 'WarpGate API.png', { type: 'image/png' })
+}
+
 function encodeUtf8Base64(value: string): string {
   const bytes = new TextEncoder().encode(value)
   let binary = ''
@@ -217,8 +227,18 @@ function KelivoPage() {
     }
 
     try {
+      const iconFile = await getWarpgateShareIconFile()
+      if (iconFile && navigator.canShare?.({ files: [iconFile] })) {
+        await navigator.share({
+          title: 'WarpGateAPI',
+          text: shareString,
+          files: [iconFile],
+        })
+        return
+      }
+
       await navigator.share({
-        title: 'Kelivo',
+        title: 'WarpGateAPI',
         text: shareString,
       })
     } catch (error) {
