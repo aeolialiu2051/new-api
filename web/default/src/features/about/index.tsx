@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
-import { Construction } from 'lucide-react'
+import { Mail, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Markdown } from '@/components/ui/markdown'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -45,17 +45,35 @@ function EmptyAboutState() {
     <div className='flex min-h-[60vh] items-center justify-center p-8'>
       <div className='max-w-2xl space-y-6 text-center'>
         <div className='flex justify-center'>
-          <Construction className='text-muted-foreground h-24 w-24' />
-        </div>
-        <div className='space-y-2'>
-          <h2 className='text-2xl font-bold'>{t('No About Content Set')}</h2>
-          <p className='text-muted-foreground'>
-            {t(
-              'The administrator has not configured any about content yet. You can set it in the settings page, supporting HTML or URL.'
-            )}
-          </p>
+          <img
+            src='/logo.png'
+            alt='WarpGate API'
+            className='h-24 w-24 object-contain'
+          />
         </div>
         <div className='space-y-4 text-sm'>
+          <div className='border-border/70 bg-muted/30 mx-auto max-w-md space-y-3 rounded-lg border p-4 text-left'>
+            <h3 className='text-foreground text-base font-semibold'>
+              {t('Contact WarpGate API')}
+            </h3>
+            <div className='space-y-2'>
+              <p className='text-muted-foreground flex items-center gap-2'>
+                <Mail className='h-4 w-4 shrink-0' aria-hidden='true' />
+                <span>{t('Email:')}</span>
+                <a
+                  href='mailto:support@warpgateapi.com'
+                  className='text-primary hover:underline'
+                >
+                  support@warpgateapi.com
+                </a>
+              </p>
+              <p className='text-muted-foreground flex items-center gap-2'>
+                <MessageCircle className='h-4 w-4 shrink-0' aria-hidden='true' />
+                <span>{t('WeChat:')}</span>
+                <span className='text-foreground'>warpgateapi</span>
+              </p>
+            </div>
+          </div>
           <p>
             {t('WarpGate API project repository:')}{' '}
             <a
