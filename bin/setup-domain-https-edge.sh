@@ -140,6 +140,9 @@ server {
         proxy_set_header X-Forwarded-Proto https;
         proxy_ssl_server_name on;
         proxy_ssl_name ${DOMAIN};
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+        proxy_ssl_verify on;
+        proxy_ssl_verify_depth 3;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_buffering off;
