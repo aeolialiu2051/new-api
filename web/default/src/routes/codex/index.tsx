@@ -147,7 +147,9 @@ function CodexPage() {
       if (!res.success || !res.data?.key) {
         throw new Error(res.message || t('Failed to load API key'))
       }
-      return res.data.key
+      return res.data.key.startsWith('sk-')
+        ? res.data.key
+        : `sk-${res.data.key}`
     },
     enabled: selectedKeyId !== '',
     retry: false,
