@@ -965,6 +965,7 @@
     "Configure API documentation links for the dashboard": "Настроить ссылки на документацию API для панели управления",
     "Configure at:": "Настроить в:",
     "Configure available payment methods. Provide a JSON array.": "Настроить доступные способы оплаты. Предоставьте JSON-массив.",
+    "Configure CodeX": "Настроить CodeX",
     "Configure Creem products. Provide a JSON array.": "Настройте продукты Creem. Укажите массив JSON.",
     "Configure discount rates based on recharge amounts": "Настроить скидки в зависимости от сумм пополнения",
     "Configure experimental data export for the dashboard": "Настроить экспериментальный экспорт данных для панели управления",

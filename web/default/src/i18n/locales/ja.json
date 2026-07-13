@@ -965,6 +965,7 @@
     "Configure API documentation links for the dashboard": "ダッシュボード用のAPIドキュメントリンクを設定",
     "Configure at:": "設定場所:",
     "Configure available payment methods. Provide a JSON array.": "利用可能な支払い方法を設定します。JSON配列を提供してください。",
+    "Configure CodeX": "CodeX を設定",
     "Configure Creem products. Provide a JSON array.": "Creem製品を設定。JSON配列を提供してください。",
     "Configure discount rates based on recharge amounts": "チャージ金額に基づいた割引率を設定",
     "Configure experimental data export for the dashboard": "ダッシュボード用の実験的なデータエクスポートを設定",

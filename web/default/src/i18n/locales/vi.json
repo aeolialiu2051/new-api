@@ -965,6 +965,7 @@
     "Configure API documentation links for the dashboard": "Cấu hình các liên kết tài liệu API cho bảng điều khiển",
     "Configure at:": "Cấu hình tại:",
     "Configure available payment methods. Provide a JSON array.": "Cấu hình các phương thức thanh toán khả dụng. Cung cấp một mảng JSON.",
+    "Configure CodeX": "Cấu hình CodeX",
     "Configure Creem products. Provide a JSON array.": "Cấu hình sản phẩm Creem. Cung cấp một mảng JSON.",
     "Configure discount rates based on recharge amounts": "Cấu hình tỷ lệ chiết khấu dựa trên số tiền nạp",
     "Configure experimental data export for the dashboard": "Cấu hình xuất dữ liệu thử nghiệm cho bảng điều khiển",

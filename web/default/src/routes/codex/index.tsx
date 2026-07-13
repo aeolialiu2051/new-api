@@ -17,7 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import {
-  CodeIcon,
   Copy01Icon,
   Download01Icon,
   FileCodeIcon,
@@ -196,12 +195,9 @@ requires_openai_auth = false`
     <main className='bg-background px-4 py-6 sm:px-6 lg:py-8'>
       <div className='mx-auto flex min-h-full w-full max-w-6xl flex-col gap-7'>
         <header className='flex flex-col gap-4'>
-          <div className='bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-xl border'>
-            <HugeiconsIcon icon={CodeIcon} strokeWidth={2} aria-hidden='true' />
-          </div>
           <div className='flex flex-col gap-3'>
             <h1 className='text-3xl font-semibold tracking-normal sm:text-5xl'>
-              {t('CodeX')}
+              {t('Configure CodeX')}
             </h1>
             <p className='text-muted-foreground max-w-4xl text-xl leading-relaxed sm:text-2xl'>
               {t(

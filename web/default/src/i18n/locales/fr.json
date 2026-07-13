@@ -965,6 +965,7 @@
     "Configure API documentation links for the dashboard": "Configurer les liens de documentation API pour le tableau de bord",
     "Configure at:": "Configurer à :",
     "Configure available payment methods. Provide a JSON array.": "Configurer les méthodes de paiement disponibles. Fournir un tableau JSON.",
+    "Configure CodeX": "Configurer CodeX",
     "Configure Creem products. Provide a JSON array.": "Configurez les produits Creem. Fournissez un tableau JSON.",
     "Configure discount rates based on recharge amounts": "Configurer les taux de réduction basés sur les montants de recharge",
     "Configure experimental data export for the dashboard": "Configurer l'exportation de données expérimentales pour le tableau de bord",
