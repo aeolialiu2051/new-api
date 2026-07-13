@@ -18,6 +18,7 @@ import { Route as SetupIndexRouteImport } from './routes/setup/index'
 import { Route as RankingsIndexRouteImport } from './routes/rankings/index'
 import { Route as PricingIndexRouteImport } from './routes/pricing/index'
 import { Route as KelivoIndexRouteImport } from './routes/kelivo/index'
+import { Route as CodexIndexRouteImport } from './routes/codex/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as OauthProviderRouteImport } from './routes/oauth/$provider'
 import { Route as ConsoleTopupRouteImport } from './routes/console/topup'
@@ -112,6 +113,11 @@ const PricingIndexRoute = PricingIndexRouteImport.update({
 const KelivoIndexRoute = KelivoIndexRouteImport.update({
   id: '/kelivo/',
   path: '/kelivo/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CodexIndexRoute = CodexIndexRouteImport.update({
+  id: '/codex/',
+  path: '/codex/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
@@ -427,6 +433,7 @@ export interface FileRoutesByFullPath {
   '/console/topup': typeof ConsoleTopupRoute
   '/oauth/$provider': typeof OauthProviderRoute
   '/about/': typeof AboutIndexRoute
+  '/codex/': typeof CodexIndexRoute
   '/kelivo/': typeof KelivoIndexRoute
   '/pricing/': typeof PricingIndexRoute
   '/rankings/': typeof RankingsIndexRoute
@@ -487,6 +494,7 @@ export interface FileRoutesByTo {
   '/console/topup': typeof ConsoleTopupRoute
   '/oauth/$provider': typeof OauthProviderRoute
   '/about': typeof AboutIndexRoute
+  '/codex': typeof CodexIndexRoute
   '/kelivo': typeof KelivoIndexRoute
   '/pricing': typeof PricingIndexRoute
   '/rankings': typeof RankingsIndexRoute
@@ -551,6 +559,7 @@ export interface FileRoutesById {
   '/console/topup': typeof ConsoleTopupRoute
   '/oauth/$provider': typeof OauthProviderRoute
   '/about/': typeof AboutIndexRoute
+  '/codex/': typeof CodexIndexRoute
   '/kelivo/': typeof KelivoIndexRoute
   '/pricing/': typeof PricingIndexRoute
   '/rankings/': typeof RankingsIndexRoute
@@ -614,6 +623,7 @@ export interface FileRouteTypes {
     | '/console/topup'
     | '/oauth/$provider'
     | '/about/'
+    | '/codex/'
     | '/kelivo/'
     | '/pricing/'
     | '/rankings/'
@@ -674,6 +684,7 @@ export interface FileRouteTypes {
     | '/console/topup'
     | '/oauth/$provider'
     | '/about'
+    | '/codex'
     | '/kelivo'
     | '/pricing'
     | '/rankings'
@@ -737,6 +748,7 @@ export interface FileRouteTypes {
     | '/console/topup'
     | '/oauth/$provider'
     | '/about/'
+    | '/codex/'
     | '/kelivo/'
     | '/pricing/'
     | '/rankings/'
@@ -792,6 +804,7 @@ export interface RootRouteChildren {
   ConsoleTopupRoute: typeof ConsoleTopupRoute
   OauthProviderRoute: typeof OauthProviderRoute
   AboutIndexRoute: typeof AboutIndexRoute
+  CodexIndexRoute: typeof CodexIndexRoute
   KelivoIndexRoute: typeof KelivoIndexRoute
   PricingIndexRoute: typeof PricingIndexRoute
   RankingsIndexRoute: typeof RankingsIndexRoute
@@ -862,6 +875,13 @@ declare module '@tanstack/react-router' {
       path: '/kelivo'
       fullPath: '/kelivo/'
       preLoaderRoute: typeof KelivoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/codex/': {
+      id: '/codex/'
+      path: '/codex'
+      fullPath: '/codex/'
+      preLoaderRoute: typeof CodexIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about/': {
@@ -1378,6 +1398,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConsoleTopupRoute: ConsoleTopupRoute,
   OauthProviderRoute: OauthProviderRoute,
   AboutIndexRoute: AboutIndexRoute,
+  CodexIndexRoute: CodexIndexRoute,
   KelivoIndexRoute: KelivoIndexRoute,
   PricingIndexRoute: PricingIndexRoute,
   RankingsIndexRoute: RankingsIndexRoute,
