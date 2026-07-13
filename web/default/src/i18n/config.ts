@@ -29,6 +29,8 @@ import vi from './locales/vi.json'
 import zhCN from './locales/zh.json'
 import zhTW from './locales/zh-TW.json'
 
+const LANGUAGE_STORAGE_KEY = 'i18nextLng'
+
 export const resources = {
   en,
   zhCN,
@@ -55,10 +57,22 @@ i18n
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
+      lookupLocalStorage: LANGUAGE_STORAGE_KEY,
       // Browsers report `zh-CN`/`zh-TW`/`zh`; map them onto our `zhCN`/`zhTW`
       // codes (non-Chinese codes pass through for normal supportedLngs matching).
       convertDetectedLanguage,
     },
   })
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key !== LANGUAGE_STORAGE_KEY || !event.newValue) return
+
+    const language = convertDetectedLanguage(event.newValue)
+    if (language === i18n.language) return
+
+    void i18n.changeLanguage(language)
+  })
+}
 
 export default i18n
