@@ -34,10 +34,15 @@ export function normalizeInterfaceLanguage(value?: string | null): string {
   if (!value) return 'en'
 
   let normalized = value.trim().replaceAll('_', '-').toLowerCase()
-  if (value === 'zh-TW' || value === 'zh-HK' || value === 'zh-MO' || value === 'zhTW') {
+  if (
+    value === 'zh-TW' ||
+    value === 'zh-HK' ||
+    value === 'zh-MO' ||
+    value === 'zhTW'
+  ) {
     normalized = 'zhTW'
   }
-  if (value === 'zh-CN' || value === 'zh-Hans' || value === "zhCN") {
+  if (value === 'zh-CN' || value === 'zh-Hans' || value === 'zhCN') {
     normalized = 'zhCN'
   }
 
@@ -59,6 +64,8 @@ export function normalizeInterfaceLanguage(value?: string | null): string {
 export function convertDetectedLanguage(value: string): string {
   const lower = value.trim().replaceAll('_', '-').toLowerCase()
   if (!lower.startsWith('zh')) return value
+  if (lower === 'zhtw') return 'zhTW'
+  if (lower === 'zhcn') return 'zhCN'
   if (
     lower === 'zh-tw' ||
     lower === 'zh-hk' ||
