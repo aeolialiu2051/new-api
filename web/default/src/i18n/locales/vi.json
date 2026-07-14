@@ -3101,6 +3101,7 @@
     "Only configured combinations are overridden. All other calls keep the token group base ratio.": "Chỉ các tổ hợp đã cấu hình mới bị ghi đè. Các lệnh gọi khác giữ tỷ lệ cơ bản của nhóm token.",
     "Only enabled API keys can be shared.": "Chỉ có thể chia sẻ khóa API đang bật.",
     "Only enabled API keys can be used.": "Chỉ có thể sử dụng khóa API đã bật.",
+    "Only enabled parameters are sent with the request.": "Chỉ các tham số đã bật mới được gửi trong yêu cầu.",
     "Only enter the site origin, for example https://api.example.com. Do not include any path such as /api/user/epay/notify. Leave blank to use the server address.": "Chỉ nhập origin của trang, ví dụ https://api.example.com. Không nhập đường dẫn như /api/user/epay/notify. Để trống để dùng địa chỉ máy chủ.",
     "Only Mine": "Chỉ của tôi",
     "Only one catch-all route is allowed for the same incoming path": "Mỗi đường dẫn đầu vào chỉ được có một tuyến dự phòng",

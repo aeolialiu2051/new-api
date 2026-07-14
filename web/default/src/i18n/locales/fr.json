@@ -3101,6 +3101,7 @@
     "Only configured combinations are overridden. All other calls keep the token group base ratio.": "Seules les combinaisons configurées sont remplacées. Les autres appels conservent le ratio de base du groupe du jeton.",
     "Only enabled API keys can be shared.": "Seules les clés API activées peuvent être partagées.",
     "Only enabled API keys can be used.": "Seules les clés API activées peuvent être utilisées.",
+    "Only enabled parameters are sent with the request.": "Seuls les paramètres activés sont envoyés avec la requête.",
     "Only enter the site origin, for example https://api.example.com. Do not include any path such as /api/user/epay/notify. Leave blank to use the server address.": "Saisissez uniquement l’origine du site, par exemple https://api.example.com. N’ajoutez aucun chemin comme /api/user/epay/notify. Laissez vide pour utiliser l’adresse du serveur.",
     "Only Mine": "Uniquement les miens",
     "Only one catch-all route is allowed for the same incoming path": "Un seul routage de secours est autorisé pour le même chemin d'entrée",

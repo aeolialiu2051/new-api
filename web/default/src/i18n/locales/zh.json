@@ -3101,6 +3101,7 @@
     "Only configured combinations are overridden. All other calls keep the token group base ratio.": "只有已配置的组合会被覆盖，其他调用仍使用令牌分组的基础倍率。",
     "Only enabled API keys can be shared.": "仅可分享已启用的 API 密钥。",
     "Only enabled API keys can be used.": "仅可使用已启用的 API Key。",
+    "Only enabled parameters are sent with the request.": "只有启用的参数会随请求发送。",
     "Only enter the site origin, for example https://api.example.com. Do not include any path such as /api/user/epay/notify. Leave blank to use the server address.": "只填写站点根域名，例如 https://api.example.com。不要填写 /api/user/epay/notify 这类路径。留空则使用服务器地址。",
     "Only Mine": "仅自己",
     "Only one catch-all route is allowed for the same incoming path": "同一入口路径只允许一个兜底路由",

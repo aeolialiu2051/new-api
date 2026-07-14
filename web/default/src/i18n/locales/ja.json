@@ -3101,6 +3101,7 @@
     "Only configured combinations are overridden. All other calls keep the token group base ratio.": "設定済みの組み合わせだけが上書きされます。他の呼び出しはトークングループの基本倍率を維持します。",
     "Only enabled API keys can be shared.": "有効なAPIキーのみ共有できます。",
     "Only enabled API keys can be used.": "有効な API キーのみ使用できます。",
+    "Only enabled parameters are sent with the request.": "有効なパラメータだけがリクエストに送信されます。",
     "Only enter the site origin, for example https://api.example.com. Do not include any path such as /api/user/epay/notify. Leave blank to use the server address.": "サイトのオリジンのみを入力してください。例: https://api.example.com。/api/user/epay/notify などのパスは含めないでください。空欄の場合はサーバーアドレスを使用します。",
     "Only Mine": "自分のみ",
     "Only one catch-all route is allowed for the same incoming path": "同じ入力パスではキャッチオールルートは1つだけ許可されます",
