@@ -8,7 +8,34 @@ const cards = items => `<div class="doc-grid">${items.map(([title,desc,path]) =>
   const external = path.startsWith('http')
   return `<a class="doc-card" href="${external ? path : `#${path}`}"${external ? ' target="_blank" rel="noreferrer"' : ''}><strong>${title} <span style="float:right">→</span></strong><span>${desc}</span></a>`
 }).join('')}</div>`
-const code = (title, value) => `<div class="code-block"><div class="code-title">${title}</div><button class="copy-code" data-copy="${encodeURIComponent(value)}">复制</button><pre>${value.replaceAll('&','&amp;').replaceAll('<','&lt;')}</pre></div>`
+const escapeHtml = value => value.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+const languageKeywords = {
+  javascript: new Set(['const','let','var','new','import','from','await','async','function','return','true','false','null','undefined']),
+  python: new Set(['from','import','as','def','return','if','else','elif','for','while','in','is','not','and','or','True','False','None']),
+  shell: new Set(['curl','export'])
+}
+function highlightCode(value, language = '') {
+  language = ({ terminal:'shell', 'config.toml':'toml' })[language.toLowerCase()] || language.toLowerCase()
+  const keywords = languageKeywords[language] || new Set()
+  const tokenPattern = /(\/\/[^\n]*|#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b\d+(?:\.\d+)?\b|\b[A-Za-z_$][\w$]*\b)/g
+  let output = '', cursor = 0
+  for (const match of value.matchAll(tokenPattern)) {
+    output += escapeHtml(value.slice(cursor, match.index))
+    const token = match[0]
+    let className = ''
+    if ((language === 'javascript' && token.startsWith('//')) || (language !== 'javascript' && token.startsWith('#'))) className = 'token-comment'
+    else if (/^["'`]/.test(token)) className = 'token-string'
+    else if (/^\d/.test(token)) className = 'token-number'
+    else if (keywords.has(token)) className = 'token-keyword'
+    else if (value.slice(match.index + token.length).trimStart().startsWith('(')) className = 'token-function'
+    else if (language === 'toml' && value.slice(match.index + token.length).trimStart().startsWith('=')) className = 'token-property'
+    output += className ? `<span class="${className}">${escapeHtml(token)}</span>` : escapeHtml(token)
+    cursor = match.index + token.length
+  }
+  return output + escapeHtml(value.slice(cursor))
+}
+const code = (title, value, language = title.toLowerCase()) => `<div class="code-block"><div class="code-title"><span class="code-language-dot"></span>${title}</div><button class="copy-code" data-copy="${encodeURIComponent(value)}">复制</button><pre><code class="code-content">${highlightCode(value, language)}</code></pre></div>`
+const codeTabs = items => `<div class="code-tabs"><div class="code-tab-list" role="tablist">${items.map(([label], index) => `<button class="code-tab${index === 0 ? ' active' : ''}" role="tab" aria-selected="${index === 0}" data-tab="${index}">${label}</button>`).join('')}</div>${items.map(([label,value,language], index) => `<div class="code-tab-panel${index === 0 ? ' active' : ''}" role="tabpanel" data-panel="${index}">${code(label, value, language)}</div>`).join('')}</div>`
 
 const pages = {
   '/docs': { nav:'docs', eyebrow:'文档', title:'文档总览', lead:'WarpGate API 接入文档导航：从创建密钥开始，快速完成 Codex 与 OpenAI 兼容客户端的配置。', body: `
@@ -26,7 +53,7 @@ const pages = {
   '/docs/codex/install': { nav:'codex', eyebrow:'Codex', title:'安装 Codex', lead:'选择 Codex CLI、桌面 App 或 IDE 扩展。', body:`<h2 id="cli">Codex CLI</h2>${code('Terminal','npm install -g @openai/codex\ncodex --version')}<h2 id="app">Codex App</h2><p>安装桌面 App 后，可以和 CLI 共用 <code>~/.codex</code> 下的配置。</p><h2 id="next">下一步</h2><p>继续进行 <a href="#/docs/codex/config">WarpGate API 配置</a>。</p>` },
   '/docs/codex/config': { nav:'codex', eyebrow:'Codex', title:'配置 Codex', lead:'创建供应商配置并通过环境变量安全地提供 API Key。', body:`<h2 id="key">设置密钥</h2>${code('Terminal','export WARPGATE_API_KEY="your-wg-key"')}<h2 id="provider">添加供应商</h2><p>编辑 <code>~/.codex/config.toml</code>：</p>${code('config.toml',`model_provider = "warpgateapi_proxy"\n\n[model_providers.warpgateapi_proxy]\nname = "WarpGate API"\nbase_url = "https://warpgateapi.com/v1"\nenv_key = "WARPGATE_API_KEY"\nwire_api = "responses"\nrequires_openai_auth = false`)}<h2 id="verify">验证</h2>${code('Terminal','codex')}<div class="callout"><strong>Base URL</strong><p>Codex 必须使用 <code>https://warpgateapi.com/v1</code>，并启用 <code>responses</code> wire API。</p></div>` },
   '/docs/api': { nav:'api', eyebrow:'开发者', title:'API 参考', lead:'WarpGate API 提供统一的 OpenAI 兼容端点。', body:`<h2 id="auth">鉴权</h2><p>所有请求均通过 HTTP Bearer Token 鉴权。</p>${code('HTTP','Authorization: Bearer YOUR_API_KEY')}<h2 id="endpoints">端点</h2>${cards([['OpenAI 兼容','/v1/chat/completions 与 /v1/responses。','/docs/api/openai']])}<h2 id="errors">错误响应</h2><p>接口使用标准 HTTP 状态码。请重点处理 <code>401</code> 鉴权失败、<code>429</code> 速率限制与 <code>5xx</code> 上游暂时不可用。</p>` },
-  '/docs/api/openai': { nav:'api', eyebrow:'API', title:'OpenAI 兼容接口', lead:'使用现有 OpenAI SDK，只需替换 Base URL 和 API Key。', body:`<h2 id="javascript">JavaScript</h2>${code('JavaScript',`import OpenAI from "openai";\n\nconst client = new OpenAI({\n  apiKey: process.env.WARPGATE_API_KEY,\n  baseURL: "https://warpgateapi.com/v1",\n});\n\nconst response = await client.responses.create({\n  model: "gpt-5.4-mini",\n  input: "Hello",\n});`)}<h2 id="python">Python</h2>${code('Python',`from openai import OpenAI\n\nclient = OpenAI(\n    api_key=os.environ["WARPGATE_API_KEY"],\n    base_url="https://warpgateapi.com/v1",\n)`)} ` },
+  '/docs/api/openai': { nav:'api', eyebrow:'API', title:'OpenAI 兼容接口', lead:'使用现有 OpenAI SDK，只需替换 Base URL 和 API Key。', body:`<h2 id="examples">请求示例</h2><p>选择你使用的语言，以下示例均调用 Responses API。</p>${codeTabs([['JavaScript',`import OpenAI from "openai";\n\nconst client = new OpenAI({\n  apiKey: process.env.WARPGATE_API_KEY,\n  baseURL: "https://warpgateapi.com/v1",\n});\n\nconst response = await client.responses.create({\n  model: "gpt-5.4-mini",\n  input: "Hello",\n});\n\nconsole.log(response.output_text);`,'javascript'],['Python',`import os\nfrom openai import OpenAI\n\nclient = OpenAI(\n    api_key=os.environ["WARPGATE_API_KEY"],\n    base_url="https://warpgateapi.com/v1",\n)\n\nresponse = client.responses.create(\n    model="gpt-5.4-mini",\n    input="Hello",\n)\n\nprint(response.output_text)`,'python'],['curl',`curl https://warpgateapi.com/v1/responses \\\n  -H "Authorization: Bearer $WARPGATE_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '{"model":"gpt-5.4-mini","input":"Hello"}'`,'shell']])}` },
   '/docs/faq': { nav:'faq', eyebrow:'支持', title:'常见问题', lead:'关于地址、鉴权、模型和费用的高频问题。', body:`<h2 id="base-url">Base URL 应该填什么？</h2><p>Codex 和 OpenAI SDK 使用 <code>https://warpgateapi.com/v1</code>。</p><h2 id="unauthorized">为什么返回 401？</h2><p>检查 API Key 是否完整、是否启用，以及请求头是否为 <code>Authorization: Bearer YOUR_API_KEY</code>。</p><h2 id="model">为什么提示模型不存在？</h2><p>模型可用性可能调整，请使用控制台模型广场中展示的准确模型名称。</p><h2 id="rate-limit">遇到 429 怎么办？</h2><p>降低并发、加入指数退避重试，并确认账户余额和令牌额度。</p>` }
 }
 
@@ -43,6 +70,10 @@ function render(){
   const headings = [...document.querySelectorAll('#article h2')]
   document.querySelector('#toc-nav').innerHTML = headings.map(h => `<a href="#${current}::${h.id}" data-anchor="${h.id}">${h.textContent}</a>`).join('')
   document.querySelectorAll('.copy-code').forEach(btn => btn.onclick = () => copy(decodeURIComponent(btn.dataset.copy), btn))
+  document.querySelectorAll('.code-tabs').forEach(group => group.querySelectorAll('.code-tab').forEach(tab => tab.onclick = () => {
+    group.querySelectorAll('.code-tab').forEach(item => { item.classList.toggle('active', item === tab); item.setAttribute('aria-selected', item === tab) })
+    group.querySelectorAll('.code-tab-panel').forEach(panel => panel.classList.toggle('active', panel.dataset.panel === tab.dataset.tab))
+  }))
   window.scrollTo(0,0); document.querySelector('#sidebar').classList.remove('open')
   const anchor = location.hash.split('::')[1]; if(anchor) setTimeout(() => document.getElementById(anchor)?.scrollIntoView(),0)
 }
