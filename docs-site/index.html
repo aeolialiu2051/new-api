@@ -13,7 +13,7 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#/docs" aria-label="WarpGate API Docs 首页">
+      <a class="brand" id="brand-link" href="#/docs" aria-label="WarpGate API Docs 首页">
         <img class="brand-logo" src="./logo_warpgate.png" alt="" aria-hidden="true" />
         <span>WarpGate <b>API</b></span><em>Docs</em>
       </a>
@@ -25,6 +25,7 @@
       </nav>
       <div class="top-actions">
         <button class="search-trigger" id="search-trigger" aria-label="搜索文档"><span>⌕</span> 搜索或提问… <kbd>⌘ K</kbd></button>
+        <button class="language-button" id="language-toggle" aria-label="Switch to English">EN</button>
         <button class="icon-button" id="theme-toggle" aria-label="切换主题">◐</button>
         <a class="console-button" href="https://warpgateapi.com/dashboard" target="_blank" rel="noreferrer">控制台 <span>↗</span></a>
         <button class="menu-button" id="menu-button" aria-label="打开菜单">☰</button>
@@ -36,15 +37,15 @@
         <nav id="sidebar-nav" aria-label="文档导航"></nav>
       </aside>
       <main class="content"><article id="article"></article></main>
-      <aside class="toc"><div><strong>本页目录</strong><nav id="toc-nav"></nav></div></aside>
+      <aside class="toc"><div><strong id="toc-title">本页目录</strong><nav id="toc-nav"></nav></div></aside>
     </div>
 
     <div class="search-modal" id="search-modal" aria-hidden="true">
       <div class="search-backdrop"></div>
-      <section class="search-panel" role="dialog" aria-modal="true" aria-label="搜索文档">
+      <section class="search-panel" id="search-panel" role="dialog" aria-modal="true" aria-label="搜索文档">
         <div class="search-input-wrap"><span>⌕</span><input id="search-input" placeholder="搜索文档…" autocomplete="off" /><kbd>ESC</kbd></div>
         <div class="search-results" id="search-results"></div>
-        <footer><span>↑↓ 选择</span><span>↵ 打开</span></footer>
+        <footer><span id="search-select">↑↓ 选择</span><span id="search-open">↵ 打开</span></footer>
       </section>
     </div>
     <script src="./app.js"></script>
