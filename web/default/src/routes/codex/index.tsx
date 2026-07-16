@@ -51,6 +51,8 @@ type ProviderType = 'openai'
 
 const DEFAULT_PROVIDER_NAME = 'WarpGate API'
 const CODEX_DOWNLOAD_URL = 'https://openai.com/codex/'
+const CODEX_INSTALLER_URL =
+  'https://raw.githubusercontent.com/aeolialiu2051/warpgateapi-setups/main/codex/install.sh'
 const DIACRITIC_PATTERN = /[\u0300-\u036f]/g
 const NON_ALPHANUMERIC_PATTERN = /[^a-z0-9]/g
 const CODEX_PROVIDER_OPTIONS: {
@@ -59,6 +61,19 @@ const CODEX_PROVIDER_OPTIONS: {
 }[] = [{ channelType: 1, providerType: 'openai' }]
 
 let sessionVerified = false
+
+function createCodexSetupCommand(apiKey: string, configToml: string): string {
+  const payload = JSON.stringify({ version: 1, apiKey, configToml })
+  const bytes = new TextEncoder().encode(payload)
+  let binary = ''
+  for (const byte of bytes) binary += String.fromCharCode(byte)
+  const encodedPayload = btoa(binary)
+    .replaceAll('+', '-')
+    .replaceAll('/', '_')
+    .replace(/=+$/, '')
+
+  return `curl -fsSL ${CODEX_INSTALLER_URL} | bash -s -- '${encodedPayload}'`
+}
 
 async function requireCodexAuth(locationHref: string) {
   const { auth } = useAuthStore.getState()
@@ -170,6 +185,9 @@ env_key = "WARPGATE_API_KEY"
 wire_api = "responses"
 requires_openai_auth = false`
   const codexConfig = `${modelProviderConfig}\n\n${providerConfig}`
+  const codexSetupCommand = fetchedTokenKey
+    ? createCodexSetupCommand(fetchedTokenKey, codexConfig)
+    : ''
 
   let apiKeyOptions
   if (apiKeys.length === 0) {
@@ -308,7 +326,7 @@ requires_openai_auth = false`
           </section>
         </div>
 
-        <div className='grid gap-3 border-t pt-5 sm:grid-cols-3 sm:gap-4'>
+        <div className='grid gap-3 border-t pt-5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4'>
           <Button
             variant='outline'
             size='lg'
@@ -335,6 +353,20 @@ requires_openai_auth = false`
               data-icon='inline-start'
             />
             {t('Copy configuration')}
+          </Button>
+          <Button
+            variant='outline'
+            size='lg'
+            className='h-12 text-base'
+            disabled={!codexSetupCommand}
+            onClick={() => copyToClipboard(codexSetupCommand)}
+          >
+            <HugeiconsIcon
+              icon={FileCodeIcon}
+              strokeWidth={2}
+              data-icon='inline-start'
+            />
+            {t('One-click configure CodeX')}
           </Button>
           <Button
             size='lg'

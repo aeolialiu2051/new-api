@@ -3091,6 +3091,7 @@
     "One IP or CIDR range per line": "每行一個 IP 或 CIDR 範圍",
     "One IP per line (empty for no restriction)": "每行一個 IP (留空表示無限制)",
     "one keyword per line": "每行一個關鍵詞",
+    "One-click configure CodeX": "一鍵設定 CodeX",
     "online": "在線",
     "Online": "在線",
     "Online payment is not enabled. Please contact the administrator.": "管理員未開啟線上支付功能，請聯絡管理員設定。",

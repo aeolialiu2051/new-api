@@ -3091,6 +3091,7 @@
     "One IP or CIDR range per line": "1行に1つのIPまたはCIDR範囲",
     "One IP per line (empty for no restriction)": "1行に1つのIP (制限なしの場合は空欄)",
     "one keyword per line": "1行に1つのキーワード",
+    "One-click configure CodeX": "CodeX をワンクリックで設定",
     "online": "オンライン",
     "Online": "オンライン",
     "Online payment is not enabled. Please contact the administrator.": "オンライン決済が有効になっていません。管理者にお問い合わせください。",
