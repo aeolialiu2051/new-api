@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="WarpGate API 文档 — 快速接入 Codex 与 OpenAI 兼容客户端。" />
+    <meta name="theme-color" content="#09090b" />
+    <title>WarpGate API Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#/docs" aria-label="WarpGate API Docs 首页">
+        <img class="brand-logo" src="./logo_warpgate.png" alt="" aria-hidden="true" />
+        <span>WarpGate <b>API</b></span><em>Docs</em>
+      </a>
+      <nav class="topnav" aria-label="主导航">
+        <a href="#/docs" data-nav="docs">文档</a>
+        <a href="#/docs/codex" data-nav="codex">Codex</a>
+        <a href="#/docs/api" data-nav="api">API</a>
+        <a href="#/docs/faq" data-nav="faq">常见问题</a>
+      </nav>
+      <div class="top-actions">
+        <button class="search-trigger" id="search-trigger" aria-label="搜索文档"><span>⌕</span> 搜索或提问… <kbd>⌘ K</kbd></button>
+        <button class="icon-button" id="theme-toggle" aria-label="切换主题">◐</button>
+        <a class="console-button" href="https://warpgateapi.com/dashboard" target="_blank" rel="noreferrer">控制台 <span>↗</span></a>
+        <button class="menu-button" id="menu-button" aria-label="打开菜单">☰</button>
+      </div>
+    </header>
+
+    <div class="page-shell">
+      <aside class="sidebar" id="sidebar">
+        <nav id="sidebar-nav" aria-label="文档导航"></nav>
+      </aside>
+      <main class="content"><article id="article"></article></main>
+      <aside class="toc"><div><strong>本页目录</strong><nav id="toc-nav"></nav></div></aside>
+    </div>
+
+    <div class="search-modal" id="search-modal" aria-hidden="true">
+      <div class="search-backdrop"></div>
+      <section class="search-panel" role="dialog" aria-modal="true" aria-label="搜索文档">
+        <div class="search-input-wrap"><span>⌕</span><input id="search-input" placeholder="搜索文档…" autocomplete="off" /><kbd>ESC</kbd></div>
+        <div class="search-results" id="search-results"></div>
+        <footer><span>↑↓ 选择</span><span>↵ 打开</span></footer>
+      </section>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>
