@@ -6,6 +6,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly INSTALL_DIR="${TRAEFIK_INSTALL_DIR:-/opt/traefik-edge}"
 readonly ENV_FILE="${ENV_FILE:-${SCRIPT_DIR}/.env}"
 readonly TRAEFIK_IMAGE="${TRAEFIK_IMAGE:-traefik:v3.6}"
+readonly TRAEFIK_DOCKER_NETWORK="${TRAEFIK_DOCKER_NETWORK:-traefik-edge}"
 readonly APT_LOCK_WAIT_SECONDS="${APT_LOCK_WAIT_SECONDS:-600}"
 readonly PUBLIC_CHECK_TIMEOUT_SECONDS="${PUBLIC_CHECK_TIMEOUT_SECONDS:-240}"
 
@@ -67,6 +68,7 @@ Optional process overrides:
   ENV_FILE=/path/to/.env
   TRAEFIK_INSTALL_DIR=/opt/traefik-edge
   TRAEFIK_IMAGE=traefik:v3.6
+  TRAEFIK_DOCKER_NETWORK=traefik-edge
   APT_LOCK_WAIT_SECONDS=600
 EOF
 }
@@ -302,6 +304,11 @@ entryPoints:
         idleTimeout: 3600s
 
 providers:
+  docker:
+    endpoint: unix:///var/run/docker.sock
+    exposedByDefault: false
+    network: ${TRAEFIK_DOCKER_NETWORK}
+
   file:
     directory: /etc/traefik/dynamic
     watch: true
@@ -403,9 +410,17 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./dynamic:/etc/traefik/dynamic:ro
       - ./letsencrypt:/letsencrypt
+    networks:
+      - shared-edge
+
+networks:
+  shared-edge:
+    external: true
+    name: ${TRAEFIK_DOCKER_NETWORK}
 EOF
 }
 
@@ -414,6 +429,7 @@ EOF
 [[ $EUID -eq 0 ]] || die "run with sudo"
 [[ -f "$ENV_FILE" ]] || die "environment file not found: $ENV_FILE"
 command -v apt-get >/dev/null 2>&1 || die "only Ubuntu/Debian is supported"
+[[ "$TRAEFIK_DOCKER_NETWORK" =~ ^[A-Za-z0-9_.-]+$ ]] || die "TRAEFIK_DOCKER_NETWORK contains invalid characters"
 [[ "$APT_LOCK_WAIT_SECONDS" =~ ^[0-9]+$ ]] || die "APT_LOCK_WAIT_SECONDS must be numeric"
 [[ "$PUBLIC_CHECK_TIMEOUT_SECONDS" =~ ^[0-9]+$ ]] && ((PUBLIC_CHECK_TIMEOUT_SECONDS >= 10)) || die "PUBLIC_CHECK_TIMEOUT_SECONDS must be at least 10"
 
@@ -491,6 +507,13 @@ chmod 700 "$INSTALL_DIR/letsencrypt"
 touch "$INSTALL_DIR/letsencrypt/acme.json"
 chmod 600 "$INSTALL_DIR/letsencrypt/acme.json"
 
+if ! docker network inspect "$TRAEFIK_DOCKER_NETWORK" >/dev/null 2>&1; then
+  docker network create "$TRAEFIK_DOCKER_NETWORK" >/dev/null
+  printf 'Created shared Docker network: %s\n' "$TRAEFIK_DOCKER_NETWORK"
+else
+  printf 'Reusing shared Docker network: %s\n' "$TRAEFIK_DOCKER_NETWORK"
+fi
+
 write_traefik_static_config "$ACME_EMAIL"
 write_dynamic_routes
 write_compose_file
@@ -547,6 +570,7 @@ ROLLBACK_REQUIRED=false
 
 log "Deployment completed"
 printf 'Traefik image: %s\n' "$TRAEFIK_IMAGE"
+printf 'Shared Docker network: %s\n' "$TRAEFIK_DOCKER_NETWORK"
 printf 'Routes: %d\n' "${#ROUTE_DOMAINS[@]}"
 printf 'Config directory: %s\n' "$INSTALL_DIR"
 printf 'Logs: docker logs -f traefik-edge\n'

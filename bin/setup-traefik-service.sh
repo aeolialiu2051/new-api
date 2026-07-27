@@ -12,6 +12,7 @@ INPUT_ENV_FILE="${ENV_FILE:-${PROJECT_ROOT}/.env}"
 
 TRAEFIK_INSTALL_DIR="${TRAEFIK_INSTALL_DIR:-/opt/traefik-service}"
 TRAEFIK_IMAGE="${TRAEFIK_IMAGE:-traefik:v3.6}"
+TRAEFIK_DOCKER_NETWORK="${TRAEFIK_DOCKER_NETWORK:-traefik-service}"
 ACME_CA_SERVER="${ACME_CA_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
 APT_LOCK_WAIT_SECONDS="${APT_LOCK_WAIT_SECONDS:-600}"
 MAX_DOMAINS="${MAX_DOMAINS:-100}"
@@ -43,6 +44,10 @@ Optional per-route variables:
   SERVICE_SCHEME_1          http or https; inferred from port when omitted
   INSECURE_SKIP_VERIFY_1   true by default for HTTPS backends
   PASS_HOST_HEADER_1       true by default
+
+Optional shared edge variable:
+  TRAEFIK_DOCKER_NETWORK  Docker network shared by Traefik and Vibrail apps;
+                          defaults to traefik-service
 
 Example .env:
   ACME_EMAIL=you@example.com
@@ -106,7 +111,8 @@ load_env_file() {
   local key value index
   local -a global_keys=(
     ACME_EMAIL VPS_IP CLOUDFLARE_API_TOKEN TRAEFIK_IMAGE
-    TRAEFIK_INSTALL_DIR ACME_CA_SERVER APT_LOCK_WAIT_SECONDS MAX_DOMAINS
+    TRAEFIK_INSTALL_DIR TRAEFIK_DOCKER_NETWORK ACME_CA_SERVER
+    APT_LOCK_WAIT_SECONDS MAX_DOMAINS
   )
 
   for key in "${global_keys[@]}"; do
@@ -246,6 +252,7 @@ validate_inputs() {
   [[ "$ACME_EMAIL" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ ]] || die "ACME_EMAIL is missing or invalid"
   is_ipv4 "$VPS_IP" || die "VPS_IP is missing or is not a valid IPv4 address"
   [[ -n "$CLOUDFLARE_API_TOKEN" ]] || die "CLOUDFLARE_API_TOKEN is missing or empty"
+  [[ "$TRAEFIK_DOCKER_NETWORK" =~ ^[A-Za-z0-9_.-]+$ ]] || die "TRAEFIK_DOCKER_NETWORK contains invalid characters"
   [[ "$APT_LOCK_WAIT_SECONDS" =~ ^[0-9]+$ ]] && ((APT_LOCK_WAIT_SECONDS >= 1)) || die "APT_LOCK_WAIT_SECONDS must be a positive integer"
   [[ "$MAX_DOMAINS" =~ ^[0-9]+$ ]] && ((MAX_DOMAINS >= 1)) || die "MAX_DOMAINS must be a positive integer"
 
@@ -323,6 +330,11 @@ entryPoints:
         idleTimeout: 3600s
 
 providers:
+  docker:
+    endpoint: unix:///var/run/docker.sock
+    exposedByDefault: false
+    network: $(yaml_quote "$TRAEFIK_DOCKER_NETWORK")
+
   file:
     directory: /etc/traefik/dynamic
     watch: true
@@ -439,20 +451,23 @@ services:
     environment:
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./dynamic:/etc/traefik/dynamic:ro
       - ./letsencrypt:/letsencrypt
     networks:
-      - traefik-service
+      - shared-edge
 
 networks:
-  traefik-service:
-    name: traefik-service
+  shared-edge:
+    external: true
+    name: ${TRAEFIK_DOCKER_NETWORK}
 EOF_COMPOSE
 
   umask 077
   cat >"$COMPOSE_ENV_FILE" <<EOF_ENV
 TRAEFIK_IMAGE=${TRAEFIK_IMAGE}
+TRAEFIK_DOCKER_NETWORK=${TRAEFIK_DOCKER_NETWORK}
 CF_DNS_API_TOKEN=${CLOUDFLARE_API_TOKEN}
 EOF_ENV
   chmod 0600 "$COMPOSE_ENV_FILE"
@@ -491,6 +506,13 @@ deploy() {
   touch "$ACME_FILE"
   chmod 0600 "$ACME_FILE"
 
+  if ! docker network inspect "$TRAEFIK_DOCKER_NETWORK" >/dev/null 2>&1; then
+    docker network create "$TRAEFIK_DOCKER_NETWORK" >/dev/null
+    printf 'Created shared Docker network: %s\n' "$TRAEFIK_DOCKER_NETWORK"
+  else
+    printf 'Reusing shared Docker network: %s\n' "$TRAEFIK_DOCKER_NETWORK"
+  fi
+
   write_static_config
   write_dynamic_config
   write_compose_file
@@ -515,6 +537,7 @@ print_summary() {
   printf '\nTraefik deployment completed.\n'
   printf 'Input environment: %s\n' "$INPUT_ENV_FILE"
   printf 'Install directory: %s\n' "$TRAEFIK_INSTALL_DIR"
+  printf 'Shared Docker network: %s\n' "$TRAEFIK_DOCKER_NETWORK"
   printf 'Trusted Edge VPS: %s\n' "$VPS_IP"
   printf 'HTTPS entrypoint: TCP 443\n'
   printf 'ACME: Cloudflare DNS-01 via 1.1.1.1/8.8.8.8 (%s)\n\n' "$ACME_EMAIL"
