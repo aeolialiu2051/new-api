@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 readonly SCRIPT_NAME="$(basename "$0")"
-readonly SCRIPT_VERSION="2026.07.27"
+readonly SCRIPT_VERSION="2026.07.28"
 readonly PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # User-provided configuration file. This is intentionally separate from the
@@ -355,7 +355,9 @@ certificatesResolvers:
 log:
   level: INFO
 
-accessLog: {}
+accessLog:
+  format: json
+  bufferingSize: 0
 EOF_STATIC
 }
 
@@ -540,6 +542,7 @@ print_summary() {
   printf 'Shared Docker network: %s\n' "$TRAEFIK_DOCKER_NETWORK"
   printf 'Trusted Edge VPS: %s\n' "$VPS_IP"
   printf 'HTTPS entrypoint: TCP 443\n'
+  printf 'Access logs: JSON to container stdout (live/unbuffered)\n'
   printf 'ACME: Cloudflare DNS-01 via 1.1.1.1/8.8.8.8 (%s)\n\n' "$ACME_EMAIL"
   printf 'Configured routes:\n'
 
