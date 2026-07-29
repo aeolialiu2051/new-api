@@ -287,14 +287,6 @@ log:
 accessLog: {}
 
 entryPoints:
-  web:
-    address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
   websecure:
     address: ":443"
     transport:
@@ -318,8 +310,7 @@ certificatesResolvers:
     acme:
       email: "${acme_email}"
       storage: /letsencrypt/acme.json
-      httpChallenge:
-        entryPoint: web
+      tlsChallenge: {}
 EOF
 }
 
@@ -407,7 +398,6 @@ services:
     security_opt:
       - no-new-privileges:true
     ports:
-      - "80:80"
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -528,9 +518,9 @@ if [[ "$TRAEFIK_WAS_RUNNING" == true ]]; then
   compose down
 fi
 
-if ss -ltnp '( sport = :80 or sport = :443 )' | grep -q LISTEN; then
-  ss -ltnp '( sport = :80 or sport = :443 )' >&2 || true
-  die "ports 80 or 443 are still occupied"
+if ss -ltnp '( sport = :443 )' | grep -q LISTEN; then
+  ss -ltnp '( sport = :443 )' >&2 || true
+  die "port 443 is still occupied"
 fi
 
 compose pull
